@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function CategoryPage() {
   const { category } = useLocalSearchParams();
   const [meals, setMeals] = useState([]);
   const router = useRouter();
+
+  // Get screen width to determine the number of columns
+  const screenWidth = Dimensions.get('window').width;
+  const numColumns = screenWidth < 600 ? 2 : 4; // 2 columns for small screens, 3 for larger screens
 
   useEffect(() => {
     fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`)
@@ -18,6 +22,7 @@ export default function CategoryPage() {
       data={meals}
       keyExtractor={(item) => item.idMeal}
       contentContainerStyle={styles.container}
+      numColumns={numColumns} // Dynamically set the number of columns
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.card}
@@ -34,9 +39,11 @@ export default function CategoryPage() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    justifyContent: 'center',
   },
   card: {
-    marginBottom: 16,
+    flex: 1,
+    margin: 8,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#f9f9f9',
@@ -49,5 +56,6 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
   },
 });
